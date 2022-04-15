@@ -1,3 +1,8 @@
+<!--
+ * @Description: 
+ * @Date: 2022-04-14 15:28:56
+ * @LastEditTime: 2022-04-15 15:31:39
+-->
 # electron 静默打印
 
 项目基于 [electron-vue](https://github.com/SimulatedGREG/electron-vue) 基础上开发, 使用的 electron 版本为 **11.2.1** 。
@@ -90,4 +95,8 @@ fetch(`${url}?fileUrl=${fileUrl}`)
 
 ## 第三方包推荐
 1. 日志调试 ( [electron-log](https://github.com/megahertz/electron-log) );
+  electron-log 日志所在位置: 
+  - **on Linux:** ~/.config/{app name}/logs/{process type}.log
+  - **on macOS:** ~/Library/Logs/{app name}/{process type}.log
+  - **on Windows:** %USERPROFILE%\AppData\Roaming{app name}\logs{process type}.log
 2. 自动升级 ( electron-updater );
