@@ -1,7 +1,7 @@
 /*
  * @Description: 设置唤醒 app 的自定义协议
  * @Date: 2022-04-14 16:18:38
- * @LastEditTime: 2022-04-15 14:59:01
+ * @LastEditTime: 2022-04-18 14:55:21
  */
 
 /**
@@ -48,15 +48,19 @@ app.on('second-instance', (event, argv) => {
   console.log('---', argv)
   // window 处理
   if (process.platform === 'win32') {
-    const query = handleArguments(argv)
-    log.info('handleArguments: ', query)
-    const hide = query.hide
-    if (hide && Number(hide) === 1) {
+    try {
+      const query = handleArguments(argv)
+      log.info('handleArguments: ', query)
+      const hide = query.hide
+      if (hide && Number(hide) === 1) {
       // 隐藏主界面
-      hideMainWin()
-    } else {
+        hideMainWin()
+      } else {
       // 直接显示主界面
-      showMainWin()
+        showMainWin()
+      }
+    } catch (e) {
+      log.info(e)
     }
 
     event.preventDefault()
