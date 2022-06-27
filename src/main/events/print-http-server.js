@@ -2,7 +2,7 @@
 /*
  * @Description:
  * @Date: 2022-01-10 17:39:25
- * @LastEditTime: 2022-01-18 10:50:11
+ * @LastEditTime: 2022-06-27 18:18:42
  */
 const log = require('electron-log')
 const path = require('path')
@@ -66,9 +66,15 @@ function createExpressServer (__static, httpPort, socketPort, cacheDir, deviceNa
       case 'queue-status':
         notifyQueuePanel(result)
         break
+
       case 'preview-file':
         emitter.emit('win-preview-file', result)
         break
+
+      case 'print-image':
+        emitter.emit('child-print-print', result)
+        break
+
       default:
         break
     }
@@ -111,4 +117,13 @@ ipcMain.handle('shutDown-print-server', async (e, argv) => {
 
   console.log('已关闭 express ')
   return { status: 1, message: '已关闭' }
+})
+
+// 通知子进程打印完成
+emitter.on('print-image-success', () => {
+  server.send({type: 'print-image-success'})
+})
+// 通知子进程打印失败
+emitter.on('print-image-failed', (err) => {
+  server.send({type: 'print-image-failed', err})
 })

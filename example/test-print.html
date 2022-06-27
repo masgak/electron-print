@@ -1,7 +1,7 @@
 <!--
  * @Description: 
  * @Date: 2022-01-14 16:55:39
- * @LastEditTime: 2022-01-20 13:54:26
+ * @LastEditTime: 2022-06-27 18:50:19
 -->
 <!DOCTYPE html>
 <html lang="zh">
@@ -22,7 +22,7 @@
 </html>
 <script>
 const origin = 'http://localhost:45656'
-const url = `${origin}/print?fileUrl=http://192.168.131.53:36666/aabb.pdf`
+const url = `${origin}/print?fileUrl=http://192.168.131.53:36666/nginx.pdf`
 
 /**
  * 预览文件
@@ -30,7 +30,7 @@ const url = `${origin}/print?fileUrl=http://192.168.131.53:36666/aabb.pdf`
  */
 function preview (index = 'a') {
   const fileA = 'http://192.168.131.53:36666/canvas_test.pdf'
-  const fileB = 'http://192.168.131.53:36666/aabb.pdf'
+  const fileB = 'http://192.168.131.53:36666/proxy_nginx.pdf'
   const url = `${origin}/preview?fileUrl=${index === 'a' ? fileA : fileB}`
   // 返回 204
   fetch(url)
@@ -57,7 +57,7 @@ function singleDownload () {
 function multipleDownload () {
   // fileUrl 地址
   const urls = [
-    'http://192.168.131.53:36666/aabb.pdf',
+    'http://192.168.131.53:36666/proxy_nginx.pdf',
     'http://192.168.131.53:36666/canvas_test.pdf',
     'http://192.168.131.53:36666/nginx.pdf'
   ]

@@ -1,7 +1,7 @@
 /*
  * @Description:
  * @Date: 2022-01-11 17:54:26
- * @LastEditTime: 2022-01-18 14:11:35
+ * @LastEditTime: 2022-06-27 18:18:44
  */
 const download = require('download')
 // const path = require('path')
@@ -21,8 +21,8 @@ let uid = 0 // 标识 id
 async function downloadFile (url, cacheDir) {
   const options = { }
   await download(url, cacheDir, options)
-  const { filename } = getFilename(cacheDir)
-  return { filename }
+  const { filename, fileType } = getFilename(cacheDir)
+  return { filename, fileType }
 }
 
 /**
@@ -63,6 +63,11 @@ async function printPdf (cacheDir, filename, deviceName) {
   })
 }
 
+function queryFileType (fullFilename) {
+  const files = fullFilename.split('.')
+  return files[files.length - 1]
+}
+
 /**
  * 获取文件名
  * @param {String} cacheDir -缓存目录对应的文件夹下的对应文件夹
@@ -71,7 +76,7 @@ async function printPdf (cacheDir, filename, deviceName) {
 function getFilename (cacheDir) {
   const filenames = fs.readdirSync(cacheDir)
   if (filenames.length === 1) {
-    return { filename: filenames[0] }
+    return { filename: filenames[0], fileType: queryFileType(filenames[0]) }
   } else {
     throw new Error('文件不存在或文件夹内容异常')
   }
@@ -91,6 +96,38 @@ function wrapRandomFolder (cacheDir) {
   return cacheDir
 }
 
+/**
+ * 打印图片
+ * @param {String} cacheDir - 缓存目录路径
+ * @param {String} filename - 文件名
+ * @param {String} deviceName - 打印机名称
+ * @param {string} fileUrl - 图片地址
+ */
+function printImage (cacheDir, filename, deviceName, fileUrl) {
+  const filePath = `${cacheDir}\\${filename}`
+  return new Promise((resolve, reject) => {
+    process.once('message', (res) => {
+      const { type, err } = res
+
+      switch (type) {
+        case 'print-image-success':
+          resolve()
+          console.log('打印完成了, 这是子进程的消息', res)
+
+          break
+        case 'print-image-failed':
+          reject(err)
+          break
+
+        default:
+          break
+      }
+    })
+    process.send({ type: 'print-image', result: {deviceName, filePath} })
+  })
+}
+
+exports.printImage = printImage
 exports.downloadFile = downloadFile
 exports.deleteCache = deleteCache
 exports.printPdf = printPdf

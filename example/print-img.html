@@ -1,0 +1,41 @@
+<!--
+ * @Description: 
+ * @Date: 2022-06-27 12:01:22
+ * @LastEditTime: 2022-06-27 18:50:09
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打印图片</title>
+</head>
+
+<body>
+  <button onClick="printImg()">打印图片</button>
+</body>
+
+</html>
+<script>
+  const origin = 'http://localhost:45656'
+
+  function printImg () {
+    const img1 = 'http://192.168.131.53:36666/1.png'
+    const url = `${origin}/print?fileUrl=${img1}`
+
+    fetch(url + `&_ts=${randomString()}`, {
+      method: 'POST'
+    })
+      .then((res) => res.json())
+      .then(res => {
+        console.log(res)
+      })
+  }
+
+  function randomString () {
+    const r = Math.ceil(Math.random() * 20000000)
+    return r
+  }
+</script>

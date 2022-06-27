@@ -1,0 +1,41 @@
+<!--
+ * @Description: 
+ * @Date: 2022-06-27 15:42:01
+ * @LastEditTime: 2022-06-27 17:08:04
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打印图片</title>
+  <style>
+    #print-image {
+      max-width: 100vw;
+    }
+  </style>
+</head>
+
+<body>
+<img id="print-image" src="" alt="" >  
+</body>
+</html>
+<script>
+const { ipcRenderer } = require('electron')
+
+const img = document.querySelector('#print-image')
+img.onload = () => {
+  console.log('图片加载完成, 开始打印通知网页')
+  ipcRenderer.send('printing-image-process')
+}
+
+ipcRenderer.on('printing-type-image', (e, argv) => {
+  console.log('图片: ', argv)
+  argv && renderImage(argv)
+})
+
+function renderImage (fileUrl) {
+  img.src = fileUrl
+}
+</script>

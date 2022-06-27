@@ -1,14 +1,16 @@
+/* eslint-disable no-unused-vars */
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2022-01-18 14:09:51
+ * @LastEditTime: 2022-06-27 16:08:15
  */
 const express = require('express')
 const PrintScheduler = require('./print/scheduler.js')
+const { handleFileType } = require('./print/file-type')
 
 const app = express()
 
-const { downloadFile, printPdf, deleteCache, wrapRandomFolder } = require('./print/index.js')
+const { downloadFile, printPdf, deleteCache, wrapRandomFolder, printImage } = require('./print/index.js')
 
 const [,, __static, httpPort = 45656, socketPort, cacheDir, deviceName] = process.argv
 console.log(__static, httpPort, socketPort, cacheDir, deviceName)
@@ -195,27 +197,50 @@ async function handlePrint ({ fileUrl }) {
     // 包装一下文件夹 - 让它变成随机的
     const randomCacheDir = wrapRandomFolder(cacheDir)
     // // 下载文件
-    const { filename } = await downloadFile(fileUrl, randomCacheDir)
-
+    const { filename, fileType } = await downloadFile(fileUrl, randomCacheDir)
     // NOTE: 正式打印 ========== ↓
-    await printPdf(randomCacheDir, filename, deviceName)
-    deleteCache(randomCacheDir) // 这一步直接删除文件夹
+    await dispatchByFileType(handleFileType(fileType), filename, randomCacheDir, fileUrl)
     // NOTE: 正式打印 ========== ↑
 
     // // NOTE: 测试用例 ========== ↓
     // await new Promise((resolve) => {
     //   setTimeout(() => {
     //     resolve()
-    //   }, 1000)
+    //   }, 2000)
     // })
-    // deleteCache(randomCacheDir)
     // // NOTE: 测试用例 ========== ↑
 
+    // deleteCache(randomCacheDir) // 这一步直接删除文件夹
     console.log('已完成的文件', filename)
 
     return { status: true }
   } catch (e) {
     return { status: false, error: e + '' }
+  }
+}
+
+/**
+ * 根据不同的文件来处理打印
+ * 依据 handleFileType 的返回值
+ * @param {string} fileDetail - 文件具体类型
+ * @param {string} filename - 文件夹
+ * @param {string} randomCacheDir - 通过随机生成的文件夹名字
+ * @param {string} fileUrl - 资源地址
+ */
+function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl) {
+  switch (fileDetail) {
+    case 'image':
+      // 打印图片
+
+      return printImage(randomCacheDir, filename, deviceName)
+
+    case 'pdf':
+      // 打印 pdf
+
+      return printPdf(randomCacheDir, filename, deviceName)
+
+    case '':
+      // 未匹配
   }
 }
 
