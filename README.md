@@ -1,7 +1,7 @@
 <!--
  * @Description: 
  * @Date: 2022-04-14 15:28:56
- * @LastEditTime: 2022-04-15 15:31:39
+ * @LastEditTime: 2022-06-28 10:21:25
 -->
 # electron 静默打印
 
@@ -87,10 +87,11 @@ fetch(`${url}?fileUrl=${fileUrl}`)
 
 
 ## 注意
+1. 尚未对预留的 socket 内容进行开发，目前仅支持 http 请求；
 
-1. 目前仅做了 PDF 打印支持，其他文件类型还没有做适配处理；
-2. 尚未对预留的 socket 内容进行开发，目前仅支持 http 请求；
-
+## 支持打印的文件类型
+1. PDF (.pdf);
+2. 图片 (.jpg .png .jpeg);
 
 
 ## 第三方包推荐
