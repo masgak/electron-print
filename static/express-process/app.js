@@ -2,7 +2,7 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2022-06-27 16:08:15
+ * @LastEditTime: 2022-07-06 16:27:00
  */
 const express = require('express')
 const PrintScheduler = require('./print/scheduler.js')
@@ -210,7 +210,7 @@ async function handlePrint ({ fileUrl }) {
     // })
     // // NOTE: 测试用例 ========== ↑
 
-    // deleteCache(randomCacheDir) // 这一步直接删除文件夹
+    deleteCache(randomCacheDir) // 这一步直接删除文件夹
     console.log('已完成的文件', filename)
 
     return { status: true }
