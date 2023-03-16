@@ -1,0 +1,29 @@
+/* "关于"页 - css的设置 */
+body {
+  background-color: #ffffff;
+  box-sizing: border-box;
+  padding-top: 30px;
+}
+
+.logo {
+  margin: 30px 0;
+}
+
+h2.title {
+  font-size: 20px;
+  font-family: -webkit-body;
+}
+
+h3.description {
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.versions {
+  margin-bottom: 50px;
+}
+
+.bug-report-link {
+  right: 0.8em;
+  bottom: 0.8em;
+}

@@ -1,11 +1,11 @@
 /*
  * @Date: 2021-08-17 10:12:30
- * @LastEditTime: 2022-01-14 13:58:54
+ * @LastEditTime: 2023-03-16 16:28:38
  * @Description: 托盘
  */
 const { Tray, app, Menu } = require('electron')
 const { showMainWin } = require('../index')
-// const { createAboutWindow } = require('./about')
+const { createAboutWindow } = require('./about')
 const path = require('path')
 
 let tray
@@ -18,7 +18,7 @@ app.whenReady().then(() => {
   //   菜单
   const contextMenu = Menu.buildFromTemplate([
     { label: `打开${app.name}`, click: showMainWin },
-    // { label: `关于${app.name}`, click: createAboutWindow },
+    { label: `关于${app.name}`, click: createAboutWindow },
     { label: '退出', click: () => { app.exit() } }
   ])
 
