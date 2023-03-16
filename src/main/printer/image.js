@@ -2,7 +2,7 @@
 /*
  * @Description: 创建打印图片的窗口, 用于打印图片
  * @Date: 2022-06-27 15:36:07
- * @LastEditTime: 2022-06-27 18:55:12
+ * @LastEditTime: 2023-03-16 17:58:45
  */
 const path = require('path')
 const { ipcMain, BrowserWindow } = require('electron')
@@ -25,12 +25,11 @@ function createWindow () {
       nodeIntegrationInWorker: true
       // webviewTag: true // 开启webview标签渲染
       // webSecurity: false
-    }
+    },
+    show: false
   })
 
   imageWindow.loadFile(htmlPath)
-
-  imageWindow.hide() // 默认隐藏
 }
 
 createWindow()
