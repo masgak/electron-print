@@ -51,6 +51,8 @@ yarn build
 const url = 'http://localhost:45656/print'
 const fileUrl = 'http://xxxxxxxxx' // 文件地址
 fetch(`${url}?fileUrl=${fileUrl}`, { method: 'POST' })
+// 或
+fetch(`${url}`, { method: 'POST', body: { fileUrl: fileUrl, downloadOptions: { xxx } } })
 
 // 批量打印接口
 const url = 'http://localhost:45656/multiple-print'
