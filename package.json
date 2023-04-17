@@ -1,6 +1,6 @@
 {
   "name": "silent-print",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "author": "YuHua",
   "description": "this is description",
   "license": "MIT",
@@ -69,6 +69,7 @@
     "about-window": "^1.15.2",
     "ant-design-vue": "^1.7.8",
     "axios": "^0.21.4",
+    "body-parser": "^1.20.2",
     "dayjs": "^1.10.7",
     "download": "^8.0.0",
     "electron-json-storage": "^4.5.0",

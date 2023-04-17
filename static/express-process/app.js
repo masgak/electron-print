@@ -2,9 +2,10 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2022-07-06 16:27:00
+ * @LastEditTime: 2023-04-17 15:07:07
  */
 const express = require('express')
+const bodyParser = require('body-parser')
 const PrintScheduler = require('./print/scheduler.js')
 const { handleFileType } = require('./print/file-type')
 
@@ -40,6 +41,10 @@ app.all('*', (req, res, next) => {
   if (req.method === 'OPTIONS') res.send(200)/* 让options请求快速返回 */
   else next()
 })
+
+// NOTE: 在路由处理程序之前添加 body-parser 中间件
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
   res.send({
@@ -132,13 +137,20 @@ app.post('/print', (req, res, next) => {
    * 3. 下载完成后打印对应的 pdf 文件
    * 4. 打印完删除对应的随机文件夹 (不是删除文件)
    */
-  const { fileUrl } = req.query
+  const { fileUrl: fileUrlInUrl } = req.query
+
+  // WARM: 当前版本设计, fileUrl 先不从 url 中移到 body(保留在 url 中) , 因为这个调用属于破坏性更新, 将影响之前版本的调阅方法
+  // 目前才用合并处理, 如果 url 中存在 fileUrl 中的话, 就采用请求 url 中的 fileUrl (反之取 body 中的)
+
+  const { downloadOptions, fileUrl: fileUrlInBody } = req.body
+
+  const fileUrl = fileUrlInUrl || fileUrlInBody
 
   console.log('文件地址: ', fileUrl)
 
   let respondData = {}
   if (fileUrl) {
-    const printInfo = createPrintInfo(fileUrl)
+    const printInfo = createPrintInfo(fileUrl, true, downloadOptions)
 
     const printCallback = (status = 1, e) => {
       // 成功
@@ -173,15 +185,18 @@ app.post('/print', (req, res, next) => {
  * 创建打印任务信息
  * @param {String} fileUrl - 文件地址
  * @param {Boolean} isSingle - 是否单个打印
+ * @param {object} downloadOptions - download 下载库的 options 选项
+ *
  * @returns {Object}
  */
-function createPrintInfo (fileUrl, isSingle = true) {
+function createPrintInfo (fileUrl, isSingle = true, downloadOptions = {}) {
   if (!fileUrl) throw new Error('fileUrl不能为空')
   const printInfo = {
     cacheDir,
     fileUrl,
     __fileUid__: fileUid,
-    isSingle
+    isSingle,
+    downloadOptions
   }
   fileUid++
 
@@ -192,12 +207,18 @@ function createPrintInfo (fileUrl, isSingle = true) {
  * 处理打印任务
  * @returns {Promise} { status:Boolean, ?error:String }
  */
-async function handlePrint ({ fileUrl }) {
+async function handlePrint ({ fileUrl, downloadOptions }) {
   try {
     // 包装一下文件夹 - 让它变成随机的
     const randomCacheDir = wrapRandomFolder(cacheDir)
-    // // 下载文件
-    const { filename, fileType } = await downloadFile(fileUrl, randomCacheDir)
+
+    // 下载文件
+    const { filename, fileType } = await downloadFile(
+      fileUrl,
+      randomCacheDir,
+      downloadOptions
+    )
+
     // NOTE: 正式打印 ========== ↓
     await dispatchByFileType(handleFileType(fileType), filename, randomCacheDir, fileUrl)
     // NOTE: 正式打印 ========== ↑
@@ -215,6 +236,7 @@ async function handlePrint ({ fileUrl }) {
 
     return { status: true }
   } catch (e) {
+    console.log(e)
     return { status: false, error: e + '' }
   }
 }

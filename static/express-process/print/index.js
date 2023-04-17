@@ -1,7 +1,7 @@
 /*
  * @Description:
  * @Date: 2022-01-11 17:54:26
- * @LastEditTime: 2022-06-27 18:18:44
+ * @LastEditTime: 2023-04-17 15:31:50
  */
 const download = require('download')
 // const path = require('path')
@@ -16,10 +16,20 @@ let uid = 0 // 标识 id
  * 下载文件到缓存目录
  * @param {String} url - 文件 http 地址
  * @param {String} cacheDir - 缓存目录地址
+ * @param {object} options- download 下载时的 options 选项
+ *
  * @returns {Promise} {filename} 文件名
  */
-async function downloadFile (url, cacheDir) {
-  const options = { }
+async function downloadFile (url, cacheDir, options) {
+  console.log('options: ', options)
+
+  // options 可以参考 https://github.com/sindresorhus/got/blob/main/source/core/options.ts
+
+  // 可以通过以下设置来控制证书验证行为
+  // options = {
+  //   rejectUnauthorized: false
+  // }
+
   await download(url, cacheDir, options)
   const { filename, fileType } = getFilename(cacheDir)
   return { filename, fileType }
