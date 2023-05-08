@@ -2,7 +2,7 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2023-04-17 15:07:07
+ * @LastEditTime: 2023-05-08 15:46:42
  */
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -162,7 +162,7 @@ app.post('/print', (req, res, next) => {
       } else {
         respondData = {
           code: '500',
-          message: `执行下载打印过程失败: ` + e
+          message: `${e}`
         }
       }
 
@@ -208,37 +208,64 @@ function createPrintInfo (fileUrl, isSingle = true, downloadOptions = {}) {
  * @returns {Promise} { status:Boolean, ?error:String }
  */
 async function handlePrint ({ fileUrl, downloadOptions }) {
-  try {
-    // 包装一下文件夹 - 让它变成随机的
-    const randomCacheDir = wrapRandomFolder(cacheDir)
+  /**
+   * 是否打印成功
+   */
+  let status = false
 
-    // 下载文件
+  /**
+   * 打印失败时的错误信息
+   */
+  let error = ''
+
+  /**
+   * 包装一下文件夹 - 让它变成随机的
+   */
+  let randomCacheDir = ''
+
+  /**
+   * 真实文件名
+   */
+  let realFilename = ''
+
+  try {
+    randomCacheDir = wrapRandomFolder(cacheDir)
+
+    // 下载文件至本地的缓存文件夹
     const { filename, fileType } = await downloadFile(
       fileUrl,
       randomCacheDir,
       downloadOptions
     )
 
+    // // 没有文件后缀的, 要处理, 因为这有可能涉及到资源权限, 有的资源可能做了 授权, 防盗链 等处理。可能是个 http 请求
+    // if (fileType) {}
+
+    realFilename = filename
+
     // NOTE: 正式打印 ========== ↓
-    await dispatchByFileType(handleFileType(fileType), filename, randomCacheDir, fileUrl)
+    await dispatchByFileType(
+      handleFileType(fileType),
+      filename,
+      randomCacheDir,
+      fileUrl
+    )
     // NOTE: 正式打印 ========== ↑
 
-    // // NOTE: 测试用例 ========== ↓
-    // await new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     resolve()
-    //   }, 2000)
-    // })
-    // // NOTE: 测试用例 ========== ↑
-
-    deleteCache(randomCacheDir) // 这一步直接删除文件夹
-    console.log('已完成的文件', filename)
-
-    return { status: true }
+    status = true
   } catch (e) {
-    console.log(e)
-    return { status: false, error: e + '' }
+    console.log(e, '\n--------------------')
+
+    status = false
+    error = (e?.message || e) + ''
+  } finally {
+    // 无论是否打印成功, 都删除已下载的文件(直接删除文件夹)
+    deleteCache(randomCacheDir)
+
+    console.log(`===== 是否打印成功: ${status ? '是' : '否'}`, realFilename, '=====')
   }
+
+  return { status, error }
 }
 
 /**
@@ -250,6 +277,9 @@ async function handlePrint ({ fileUrl, downloadOptions }) {
  * @param {string} fileUrl - 资源地址
  */
 function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl) {
+  // 这一步, 使用 download 下载文件后, 需要看文件下载的内容是否支持打印
+  // NOTE: 目的: 为了对不同的文件类型使用不同的打印方式进行分发处理
+
   switch (fileDetail) {
     case 'image':
       // 打印图片
@@ -261,8 +291,10 @@ function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl) {
 
       return printPdf(randomCacheDir, filename, deviceName)
 
-    case '':
+    default :
       // 未匹配
+
+      throw Error('未支持打印该文件类型, 请检查链接资源是否正确且可以被访问')
   }
 }
 

@@ -1,7 +1,7 @@
 <!--
  * @Description: 
  * @Date: 2022-01-14 16:55:39
- * @LastEditTime: 2022-06-27 18:50:19
+ * @LastEditTime: 2023-05-08 15:56:52
 -->
 <!DOCTYPE html>
 <html lang="zh">
@@ -21,30 +21,35 @@
 </body>
 </html>
 <script>
-const origin = 'http://localhost:45656'
-const url = `${origin}/print?fileUrl=http://192.168.131.53:36666/nginx.pdf`
+const origin = 'http://127.0.0.1:45656'
+
+/**
+ * 测试用时, 注意资源是否会跨域
+ */
+
+// 模拟资源列表
+const resourceA = 'http://127.0.0.1:36666/canvas_test.pdf'
+const resourceB = 'http://127.0.0.1:36666/proxy_nginx.pdf'
+const resourceC = 'http://127.0.0.1:36666/nginx.pdf'
+
+const url = `${origin}/print?fileUrl=${resourceC}`
+// const url = `${origin}/print?fileUrl=http://127.0.0.1:3000/test`
 
 /**
  * 预览文件
- * @param {} index
  */
 function preview (index = 'a') {
-  const fileA = 'http://192.168.131.53:36666/canvas_test.pdf'
-  const fileB = 'http://192.168.131.53:36666/proxy_nginx.pdf'
-  const url = `${origin}/preview?fileUrl=${index === 'a' ? fileA : fileB}`
-  // 返回 204
+  const url = `${origin}/preview?fileUrl=${index === 'a' ? resourceA : resourceB}`
+
+  // 预览接口会直接返回 204 - 没有附加内容响应 (会直接调起文件预览页)
   fetch(url)
-  // .then(res => res.json())
-  // .then(res => {
-  //   console.log(res)
-  // })
 }
 
 /**
  * 单个打印
  */
 function singleDownload () {
-  fetch(url + `&_ts=${randomString()}`, { method: 'POST' })
+  fetch(url + `&_ts=${randomString()}`, { method: 'POST', mode: 'cors' })
     .then((res) => res.json())
     .then(res => {
       console.log(res)
@@ -55,14 +60,11 @@ function singleDownload () {
  * 批量打印
  */
 function multipleDownload () {
-  // fileUrl 地址
-  const urls = [
-    'http://192.168.131.53:36666/proxy_nginx.pdf',
-    'http://192.168.131.53:36666/canvas_test.pdf',
-    'http://192.168.131.53:36666/nginx.pdf'
-  ]
+  const urls = [resourceA, resourceB, resourceC]
+
   const url = `${origin}/multiple-print?fileUrl=` + urls.join(';')
-  fetch(url + `&_ts=${randomString()}`, { method: 'POST' })
+
+  fetch(url + `&_ts=${randomString()}`, { method: 'POST', mode: 'cors' })
     .then((res) => res.json())
     .then(res => {
       console.log(res)
@@ -78,8 +80,6 @@ async function singleDownloadQueue () {
     pr.push(doIt(i))
   }
 
-  console.log(pr)
-
   let result = await Promise.all(pr)
   result = result.map((data) => data)
   const app = document.querySelector('#app')
@@ -87,7 +87,7 @@ async function singleDownloadQueue () {
 }
 
 function doIt (index = 1) {
-  return fetch(url + `&_ts=${randomString()}`, { method: 'POST' })
+  return fetch(url + `&_ts=${randomString()}`, { method: 'POST', mode: 'cors' })
     .then((res) => res.json())
 }
 
