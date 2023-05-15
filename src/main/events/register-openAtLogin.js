@@ -1,7 +1,7 @@
 /*
  * @Description:注册软件自启动
  * @Date: 2022-01-14 11:05:45
- * @LastEditTime: 2022-01-14 11:30:51
+ * @LastEditTime: 2023-05-15 14:13:49
  */
 const storage = require('electron-json-storage')
 
@@ -13,6 +13,7 @@ const key = 'configuration-openAtLogin' // storage 的 key
 
 const options = {
   openAtLogin: true,
+  openAsHidden: true, // 开机自启动后默认隐藏
   path: process.execPath,
   args: []
 }
