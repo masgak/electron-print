@@ -1,7 +1,7 @@
 <!--
  * @Description: 配置页
  * @Date: 2022-01-11 09:54:35
- * @LastEditTime: 2022-01-17 16:55:12
+ * @LastEditTime: 2023-05-15 14:31:04
 -->
 <template>
   <div id="configuration">
@@ -272,7 +272,7 @@ export default {
       this.setOpenAtLogin()
       this.setDisplayQueuePanel()
 
-      this.$message.success('已保存配置')
+      this.$message.success('已保存配置,请到首页重新开启服务后生效!', 4)
       this.readConfig()
     },
     /**

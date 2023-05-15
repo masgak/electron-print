@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Menu } from 'electron' // eslint-disable-line
 import '../renderer/store'
+const log = require('electron-log')
 
 // const path = require('path');
 /**
@@ -42,7 +43,8 @@ function createWindow () {
       nodeIntegrationInWorker: true
       // webviewTag: true // 开启webview标签渲染
       // webSecurity: false
-    }
+    },
+    show: false // 默认隐藏
     // backgroundColor: '#2b374f', // 设置默认背景颜色
   })
 
@@ -61,7 +63,23 @@ function createWindow () {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    const { loginSettingsArgs, OPEN_AS_HIDDEN_WIN_TARGET } = require('../main/events/register-openAtLogin')
+
+    // TODO: 这里可能涉及到 MAC OS 的启动判断, openAtLogin, 缺少样本, 先不写了
+    app.getLoginItemSettings({
+      args: loginSettingsArgs
+    })
+
+    log.info('process.argv: ', process.argv)
+
+    // windows 下如果有设置开机自启, 则开机自启打开时默认隐藏窗口, BrowserWindow 默认 show 为 false
+    const hideWin = process.argv.includes(OPEN_AS_HIDDEN_WIN_TARGET)
+
+    if (hideWin) hideMainWin()
+    else {
+      // 如果没有设置 开机自启, 则需要显示窗口
+      mainWindow.show()
+    }
 
     if (process.env.NODE_ENV === 'development') {
       // 打开调试工具

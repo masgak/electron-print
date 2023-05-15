@@ -1,7 +1,7 @@
 /*
  * @Description:注册软件自启动
  * @Date: 2022-01-14 11:05:45
- * @LastEditTime: 2023-05-15 14:13:49
+ * @LastEditTime: 2023-05-15 15:43:29
  */
 const storage = require('electron-json-storage')
 
@@ -11,11 +11,14 @@ const { isPlainObject, isEmpty } = require('lodash')
 const isProd = process.env.NODE_ENV === 'production'
 const key = 'configuration-openAtLogin' // storage 的 key
 
+const OPEN_AS_HIDDEN_WIN_TARGET = '--openAsHidden'
+const args = [OPEN_AS_HIDDEN_WIN_TARGET] // windows 使用参数匹配
+
 const options = {
   openAtLogin: true,
-  openAsHidden: true, // 开机自启动后默认隐藏
+  openAsHidden: true, // 开机自启动后默认隐藏 (MAC OS)
   path: process.execPath,
-  args: []
+  args
 }
 
 /**
@@ -69,3 +72,6 @@ if (isProd) {
     registerOpenAtLogin(params)
   })
 }
+
+exports.loginSettingsArgs = args
+exports.OPEN_AS_HIDDEN_WIN_TARGET = OPEN_AS_HIDDEN_WIN_TARGET
