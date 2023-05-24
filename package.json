@@ -26,7 +26,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://192.168.200.78:52996/"
+        "url": ""
       }
     ],
     "electronDownload": {

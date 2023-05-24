@@ -1,7 +1,7 @@
 <!--
  * @Description: 
  * @Date: 2022-06-27 12:01:22
- * @LastEditTime: 2022-06-27 18:50:09
+ * @LastEditTime: 2023-05-24 10:43:10
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -19,10 +19,10 @@
 
 </html>
 <script>
-  const origin = 'http://localhost:45656'
+  const origin = 'http://127.0.0.1:45656'
 
   function printImg () {
-    const img1 = 'http://192.168.131.53:36666/1.png'
+    const img1 = 'http://127.0.0.1:36666/1.png'
     const url = `${origin}/print?fileUrl=${img1}`
 
     fetch(url + `&_ts=${randomString()}`, {
