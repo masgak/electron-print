@@ -2,9 +2,10 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2023-05-08 15:46:42
+ * @LastEditTime: 2023-06-05 11:20:46
  */
 const express = require('express')
+const log = require('electron-log')
 const bodyParser = require('body-parser')
 const PrintScheduler = require('./print/scheduler.js')
 const { handleFileType } = require('./print/file-type')
@@ -262,7 +263,11 @@ async function handlePrint ({ fileUrl, downloadOptions }) {
     // 无论是否打印成功, 都删除已下载的文件(直接删除文件夹)
     deleteCache(randomCacheDir)
 
-    console.log(`===== 是否打印成功: ${status ? '是' : '否'}`, realFilename, '=====')
+    const result = `是否打印成功: ${status ? '是' : '否'}`
+
+    console.log(`===== ${result}`, realFilename, '=====')
+
+    log.warn(`资源链接: ${fileUrl} \n${result} \n文件名:${realFilename}`)
   }
 
   return { status, error }

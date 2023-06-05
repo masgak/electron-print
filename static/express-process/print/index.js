@@ -1,7 +1,7 @@
 /*
  * @Description:
  * @Date: 2022-01-11 17:54:26
- * @LastEditTime: 2023-05-08 15:54:30
+ * @LastEditTime: 2023-06-05 11:50:51
  */
 const download = require('download')
 // const path = require('path')
@@ -88,7 +88,7 @@ async function printPdf (cacheDir, filename, deviceName) {
   }
   const pdfPath = `${cacheDir}\\${filename}`
   return print(pdfPath, options).then(() => {
-    console.log('打印成功')
+    // console.log('打印成功')
     return Promise.resolve(true)
   })
 }

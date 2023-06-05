@@ -1,7 +1,7 @@
 /*
  * @Description: 打印任务调度器
  * @Date: 2022-01-12 15:54:30
- * @LastEditTime: 2022-01-18 10:47:39
+ * @LastEditTime: 2023-06-05 11:24:13
  */
 const { cloneDeep } = require('lodash')
 const wrapPrintQueue = [] // 包装前的打印队列
@@ -106,7 +106,7 @@ class PrintScheduler {
    * @param {*} printInfo
    */
   insert (printInfo, successCb) {
-    console.log('调用insert')
+    // console.log('调用insert')
     if (Object.prototype.toString.call(printInfo) === '[object Object]') {
       printInfo.__uid__ = uid
     }
@@ -138,7 +138,7 @@ class PrintScheduler {
     } else {
       // currentPrint = null
       totalNum = 0
-      console.log('========打印完成了========')
+      console.log('========调用打印流程完成========')
       sendQueueStatus(true)
     }
   }
