@@ -2,7 +2,7 @@
 /*
  * @Description: 创建打印图片的窗口, 用于打印图片
  * @Date: 2022-06-27 15:36:07
- * @LastEditTime: 2023-03-16 17:58:45
+ * @LastEditTime: 2023-06-06 11:39:07
  */
 const path = require('path')
 const { ipcMain, BrowserWindow } = require('electron')
@@ -34,7 +34,7 @@ function createWindow () {
 
 createWindow()
 
-emitter.on('child-print-print', ({selectedDevice, filePath}) => {
+emitter.on('child-print-print', ({deviceName: selectedDevice, filePath}) => {
   deviceName = selectedDevice
   // 把图片发送给渲染进程
   imageWindow.webContents.send('printing-type-image', filePath)
@@ -49,6 +49,7 @@ ipcMain.on('printing-image-process', () => {
     pageSize: 'A4',
     color: false
   }
+
   imageWindow.webContents.print(options, (success, errorType) => {
     if (!success) emitter.emit('print-image-failed', errorType)
     if (success) {
