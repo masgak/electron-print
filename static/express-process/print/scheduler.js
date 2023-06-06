@@ -1,9 +1,10 @@
 /*
  * @Description: 打印任务调度器
  * @Date: 2022-01-12 15:54:30
- * @LastEditTime: 2023-06-05 11:24:13
+ * @LastEditTime: 2023-06-06 17:56:55
  */
 const { cloneDeep } = require('lodash')
+const { ScheduleTipsEnum } = require('./config')
 const wrapPrintQueue = [] // 包装前的打印队列
 let currentPrint = null // 当前正在打印的
 let printQueue = [] // 包装后的打印队列
@@ -111,7 +112,7 @@ class PrintScheduler {
       printInfo.__uid__ = uid
     }
 
-    // NOTE: 单个打印需要注册回调来代理 express 中的 respond (handlePrintSuccess中用到)
+    // NOTE: 单个打印需要注册回调来代理 express 中的 respond (handleSinglePrint中用到)
     // NOTE: 批量打印中的回调不是在这挂载处理 (在 handleMultiplePrint 中处理)
     if (printInfo.isSingle) {
       successCbs[`_cb_${uid}`] = {
@@ -124,7 +125,6 @@ class PrintScheduler {
     uid++
     totalNum++
     printQueue.push(printInfo)
-    // console.log(successCbs)
   }
 
   /**
@@ -133,13 +133,15 @@ class PrintScheduler {
   static flushPrintQueue () {
     printQueue.shift()
     currentPrint = null
+
     if (printQueue.length > 0) {
       PrintScheduler.printNext()
     } else {
-      // currentPrint = null
       totalNum = 0
-      console.log('========调用打印流程完成========')
+
       sendQueueStatus(true)
+
+      console.log('========调用打印流程完成========')
     }
   }
 
@@ -173,11 +175,13 @@ class PrintScheduler {
 
         // 当前打印的属于单个打印
         if (currentPrint.isSingle) {
-          PrintScheduler.handlePrintSuccess(currentPrint, options)
+          PrintScheduler.handleSinglePrint(currentPrint, options)
         } else {
           // 当前打印的属于批量打印队列
           PrintScheduler.handleMultiplePrint(currentPrint, options)
         }
+
+        // console.log('打印调度器结果: ', res)
       }
 
       // 刷新队列
@@ -190,9 +194,9 @@ class PrintScheduler {
    * @param {Object} currentPrint - 当前打印的内容
    * @param {Object} options - 回调选项内容
    */
-  static handlePrintSuccess (currentPrint, options) {
+  static handleSinglePrint (currentPrint, options) {
     // NOTE: 不管成功还是失败都要返回结果, 并将其从队列中移除
-    if (!options) throw new Error('options不能为空')
+    if (!options) return ScheduleTipsEnum.OPTIONS_ERROR
 
     const { __uid__ } = currentPrint
     const { successCb } = successCbs[`_cb_${__uid__}`]
@@ -203,6 +207,8 @@ class PrintScheduler {
     } else successCb()
 
     delete successCbs[`_cb_${__uid__}`]
+
+    return ScheduleTipsEnum.DONE
   }
 
   /**
@@ -212,11 +218,17 @@ class PrintScheduler {
    */
   static handleMultiplePrint (currentPrint, options) {
     // NOTE: 不管成功还是失败都要返回结果, 并将其从队列中移除
-    if (!options) throw new Error('options不能为空')
 
-    console.log(currentPrint, options)
+    if (!options) return ScheduleTipsEnum.OPTIONS_ERROR
+    // console.log('handleMultiplePrint', currentPrint, options)
 
-    const { start, end, __multipleId__, __fileUid__, successCallback } = currentPrint
+    const {
+      // start,
+      // __multipleId__,
+      end,
+      __fileUid__,
+      successCallback
+    } = currentPrint
 
     // 包装一下数据, 将当前属于一个批量打印队列的信息放到同一个数组中
     multipleStatusQueue.push(statusQueue[statusQueue.length - 1])
@@ -247,6 +259,8 @@ class PrintScheduler {
       // 清空当前批量打印队列, 等待下一个批量打印队列进入任务
       multipleStatusQueue.splice(0)
     }
+
+    return ScheduleTipsEnum.DONE
   }
 }
 

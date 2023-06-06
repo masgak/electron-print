@@ -1,7 +1,7 @@
 /*
  * @Description:
  * @Date: 2022-01-11 17:54:26
- * @LastEditTime: 2023-06-05 11:50:51
+ * @LastEditTime: 2023-06-06 16:34:15
  */
 const download = require('download')
 // const path = require('path')
@@ -29,7 +29,6 @@ const defaultDownloadOptions = {
  * @returns {Promise} {filename} 文件名
  */
 async function downloadFile (url, cacheDir, options) {
-  console.log('options: ', options)
   // options 可以参考 https://github.com/sindresorhus/got/blob/main/source/core/options.ts
 
   // 可以通过以下设置来控制证书验证行为

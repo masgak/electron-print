@@ -2,7 +2,7 @@
 /*
  * @Description:
  * @Date: 2022-01-10 17:39:25
- * @LastEditTime: 2022-06-27 18:18:42
+ * @LastEditTime: 2023-06-06 17:51:32
  */
 const log = require('electron-log')
 const path = require('path')
@@ -53,10 +53,14 @@ function notifyQueuePanel (data) {
  * @param {String} deviceName - 打印机名字
  */
 function createExpressServer (__static, httpPort, socketPort, cacheDir, deviceName) {
-  log.info('开始启动 express 打印服务')
+  // log.info('开始启动 express 打印服务')
   const printerServerPath = path.join(__static, 'express-process/app.js')
 
-  server = child_process.fork(printerServerPath, [__static, httpPort - 0, socketPort - 0, cacheDir, deviceName], { silent: true })
+  server = child_process.fork(
+    printerServerPath,
+    [__static, httpPort - 0, socketPort - 0, cacheDir, deviceName],
+    { silent: true }
+  )
 
   // 子进程通信
   server.on('message', (data) => {
@@ -83,13 +87,23 @@ function createExpressServer (__static, httpPort, socketPort, cacheDir, deviceNa
   // 监听子进程 console 信息
   server.stdout.on('data', (data) => {
     log.info('child_process: express - ', data.toString())
-    // console.log('child_process: express - ', data.toString())
   })
 
   // 监听子进程错误
   server.on('error', (err) => {
     // 如果控制器中止，则这将在 err 为 AbortError 的情况下被调用
-    log.info('child_process: express - error ', err.toString())
+    log.error('child_process: express - error ', err.toString())
+  })
+
+  // 监听子进程退出事件
+  server.on('exit', (code, signal) => {
+    console.log(`Child process exited with code ${code} and signal ${signal}`)
+
+    // WARM: 子进程异常退出, 这里需要自动重启
+    if (code === 1 && signal === null) {
+      createExpressServer(...arguments)
+      console.log(' ----------------- 服务自动重启 -------------------')
+    }
   })
 
   log.info('createExpressServer - done')

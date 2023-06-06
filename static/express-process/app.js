@@ -2,13 +2,18 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2023-06-05 11:20:46
+ * @LastEditTime: 2023-06-06 17:54:03
  */
 const express = require('express')
 const log = require('electron-log')
 const bodyParser = require('body-parser')
 const PrintScheduler = require('./print/scheduler.js')
 const { handleFileType } = require('./print/file-type')
+
+// 在子进程中捕获异常并输出错误信息到控制台
+process.on('uncaughtException', (err) => {
+  console.error(` =============== Caught exception: ${err.stack} =============== `)
+})
 
 const app = express()
 
