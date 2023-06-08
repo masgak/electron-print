@@ -2,7 +2,7 @@
 /*
  * @Description: express 单个打印服务
  * @Date: 2022-01-10 17:29:37
- * @LastEditTime: 2023-06-06 17:54:03
+ * @LastEditTime: 2023-06-08 10:27:38
  */
 const express = require('express')
 const log = require('electron-log')
@@ -36,10 +36,9 @@ let multipleQueueIndex = 0 // 同一个打印队列的 id 标识 (唯一, 会递
 
 // 允许跨域
 app.all('*', (req, res, next) => {
-  // console.log(req.headers.origin)
-  // console.log(req.environ)
-  res.header('Access-Control-Allow-Origin', req.headers.origin)
   // res.header("Access-Control-Allow-Origin", '*');
+  res.header('Access-Control-Allow-Origin', req.headers.origin)
+  res.header('Access-Control-Allow-Private-Network', 'true')
   res.header('Access-Control-Allow-Headers', 'Content-Type,Content-Length, Authorization, Accept,X-Requested-With')
   res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Credentials', 'true')
