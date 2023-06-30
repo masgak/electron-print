@@ -4,36 +4,34 @@
  * @LastEditTime: 2022-07-11 16:34:14
 -->
 
-# electron 静默打印
+# electron 静默打印(桌面端)
 
-项目基于 [electron-vue](https://github.com/SimulatedGREG/electron-vue) 基础上开发, 使用的 electron 版本为 **11.2.1** 。
+支持直接传**PDF、图片的资源地址**到打印服务的接口中，完成打印😂。
 
-> 使用版本: node: 14.16.0 ,  npm: 6.14.11 , yarn: 1.22.10
-> 
-> >  [electron-vue中文指引](https://simulatedgreg.gitbooks.io/electron-vue/content/cn/)
 
-## 使用
-
-```bash
-# 安装
-yarn install 
-
-# 运行
-yarn dev
-
-## win32 打包
-yarn build:win32
-
-## win64 打包
-yarn build
-```
 
 ## 解决问题
 
 1. 前端可以直接调本地服务接口，将文件进行静默打印，不需要弹窗提示 ( 类似 window.print 的弹窗 )；
-2. 打印进度提示与打印队列；
+2. 直接传入**PDF、图片的资源地址**到打印服务接口中就可以打印；
+3. 响应打印结果；
+4. 打印进度队列与打印进度的提示；
 
-## 实现思路
+## 已实现功能
+
+ - [x] app 右下角托盘显示
+ - [x] app 开机自启动(默认不显示主窗口)
+ - [x] 屏幕右下角打印进度条提示
+ - [x] 通过自定义协议打开/唤醒 app
+ - [x] 单个打印、批量打印、打印预览
+
+## 待实现功能
+
+ - [ ] 适配MacOS打印
+ - [ ] 打印前获取打印机状态(是否正常/脱机等等)
+
+
+## 静默打印实现思路
 
 1. 应用打开时默认启动  express 服务；
 2. 前端调用应用启动的 express 服务接口，将文件路径作为参数传过去；
@@ -42,7 +40,7 @@ yarn build
 
 ## 前端调用
 
-> 详细请看 example/test-print.html
+> 演示详细请看 example/test-print.html
 
 ```javascript
 // 应用默认启动 express 的端口为 45656
@@ -66,13 +64,33 @@ const fileUrl = 'http://yyyyyyy'
 fetch(`${url}?fileUrl=${fileUrl}`)
 ```
 
-## 已实现功能
 
-1. app 右下角托盘显示；
-2. app 开机自启动；
-3. 屏幕右下角打印进度条提示；
-4. 通过自定义协议打开/唤醒 app
-5. 单个打印、批量打印、打印预览；
+## 目前支持打印的文件类型
+
+1. PDF (.pdf) **pdf打印目前仅支持windows平台**;
+2. 图片 (.jpg .png .jpeg);
+
+## 使用
+
+```bash
+# 安装
+yarn install 
+
+# 运行
+yarn dev
+
+## win32 打包
+yarn build:win32
+
+## win64 打包
+yarn build
+```
+
+项目基于 [electron-vue](https://github.com/SimulatedGREG/electron-vue) 基础上开发, 使用的 electron 版本为 **11.2.1** 。
+
+> 使用版本: node: 14.16.0 ,  npm: 6.14.11 , yarn: 1.22.10
+> 
+> >  [electron-vue中文指引](https://simulatedgreg.gitbooks.io/electron-vue/content/cn/)
 
 ## PDF打印过程
 
@@ -85,10 +103,7 @@ fetch(`${url}?fileUrl=${fileUrl}`)
 1. 尚未对预留的 socket 内容进行开发，目前仅支持 http 请求;
 2. 项目基于win平台开发，mac平台上部分功能未做兼容处理;
 
-## 支持打印的文件类型
 
-1. PDF (.pdf) **pdf打印目前仅支持windows平台**;
-2. 图片 (.jpg .png .jpeg);
 
 ## 第三方包推荐
 
