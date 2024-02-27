@@ -1,5 +1,5 @@
 <!--
- * @Description: 
+ * @Description:
  * @Date: 2022-01-14 16:55:39
  * @LastEditTime: 2023-05-08 15:56:52
 -->
@@ -11,8 +11,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+<style>
+    textarea {
+        width: 100%;
+        height: 200px; /* Adjust the height as needed */
+        padding: 5px;
+        box-sizing: border-box;
+        resize: vertical; /* Allow vertical resizing */
+    }
+</style>
 <body>
-  <button onclick="singleDownload()">单个打印队列(1个)</button>
+<textarea id="decodedResourceA" placeholder="原始入参"></textarea>
+<textarea id="resourceAInput" placeholder="base64值"></textarea>
+<!--  <button onclick="singleDownload()">打印远程文件(1个)</button>-->
+  <button onclick="localDownload()">JSON格式打印</button>
   <button onclick="singleDownloadQueue()">单个打印队列(3个) - 模拟队列</button>
   <button onclick="multipleDownload()">批量打印队列(3个)</button>
   <button onclick="preview('a')">预览文件A</button>
@@ -27,23 +39,24 @@ const origin = 'http://127.0.0.1:45656'
  * 测试用时, 注意资源是否会跨域
  */
 
-// 模拟资源列表
-const resourceA = 'http://127.0.0.1:36666/canvas_test.pdf'
-const resourceB = 'http://127.0.0.1:36666/proxy_nginx.pdf'
-const resourceC = 'http://127.0.0.1:36666/nginx.pdf'
+// const resourceC = 'http://172.18.121.118:8066/saas/industry/selfprinter/' +
+//   'download/downloadFile2/d29ce60bc9c744be81dd8e3ca6724af0/2023-09-21/52060123/0000000098/d3cd1f'
 
-const url = `${origin}/print?fileUrl=${resourceC}`
+// 235环境归档单张票
+const resourceC = 'http://172.18.121.118:8067/saas/industry/selfprinter/' +
+  'download/getEBillFile/a1ee3a0c5c774e6a8cd8fb209f8068f4/2023-07-10/44811823/0000021516/846ef8'
+
+const resourceB = 'http://172.18.121.118:8067/saas/industry/selfprinter/' +
+  'download/getEBillFile/a1ee3a0c5c774e6a8cd8fb209f8068f4/2023-07-07/44811823/0000021510/b694c2'
+
+const resourceD = 'http://172.18.121.118:8066/saas/industry/selfprinter/download/test'
+
+// 76环境未归档清单票
+// const resourceC = 'http://172.18.121.118:8066/saas/industry/selfprinter/' +
+//   'download/downloadFile/d29ce60bc9c744be81dd8e3ca6724af0/2023-11-07/52060123/0000000104/b95183'
+
+const url = `${origin}/print?fileUrl=${resourceD}`
 // const url = `${origin}/print?fileUrl=http://127.0.0.1:3000/test`
-
-/**
- * 预览文件
- */
-function preview (index = 'a') {
-  const url = `${origin}/preview?fileUrl=${index === 'a' ? resourceA : resourceB}`
-
-  // 预览接口会直接返回 204 - 没有附加内容响应 (会直接调起文件预览页)
-  fetch(url)
-}
 
 /**
  * 单个打印
@@ -57,10 +70,22 @@ function singleDownload () {
 }
 
 /**
+ * 单个打印
+ */
+function localDownload () {
+  fetch(`${origin}/print?fileUrl=${document.getElementById("resourceAInput").value}`
+    + `&_ts=${randomString()}`, { method: 'POST', mode: 'cors' })
+    .then((res) => res.json())
+    .then(res => {
+      console.log(res)
+    })
+}
+
+/**
  * 批量打印
  */
 function multipleDownload () {
-  const urls = [resourceA, resourceB, resourceC]
+  const urls = [resourceB, resourceC]
 
   const url = `${origin}/multiple-print?fileUrl=` + urls.join(';')
 
@@ -70,6 +95,36 @@ function multipleDownload () {
       console.log(res)
     })
 }
+
+// 解码函数
+function decodeResourceA() {
+  var resourceAInput = document.getElementById("resourceAInput").value;
+  var decodedResourceA = document.getElementById("decodedResourceA");
+
+  if (resourceAInput) {
+    decodedResourceA.value = atob(resourceAInput);
+  } else {
+    decodedResourceA.value = "";
+  }
+}
+
+// 编码函数
+function encodeResourceA() {
+  var decodedResourceA = document.getElementById("decodedResourceA").value;
+  var resourceAInput = document.getElementById("resourceAInput");
+
+  if (decodedResourceA) {
+    resourceAInput.value = btoa(decodedResourceA);
+  } else {
+    resourceAInput.value = "";
+  }
+}
+
+// 监听解码文本框的变化
+document.getElementById("decodedResourceA").addEventListener("input", encodeResourceA);
+
+// 监听编码文本框的变化
+document.getElementById("resourceAInput").addEventListener("input", decodeResourceA);
 
 /**
  * 单个下载队列(3个) - 模拟队列

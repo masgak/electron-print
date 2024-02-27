@@ -1,6 +1,6 @@
 {
   "name": "silent-print",
-  "version": "0.3.5",
+  "version": "1.0.3",
   "author": "YuHua",
   "description": "this is description",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "electronDownload": {
       "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
-    "productName": "帅哥的打印机",
+    "productName": "打印组件",
     "appId": "com.example.daYu",
     "directories": {
       "output": "build"
@@ -77,6 +77,7 @@
     "electron-updater": "^4.3.9",
     "express": "^4.17.2",
     "fs-extra": "^10.0.0",
+    "js-base64": "^3.7.7",
     "lodash": "^4.17.21",
     "pdf-to-printer": "^5.2.0",
     "vue": "^2.5.16",

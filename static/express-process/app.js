@@ -9,6 +9,7 @@ const log = require('electron-log')
 const bodyParser = require('body-parser')
 const PrintScheduler = require('./print/scheduler.js')
 const { handleFileType } = require('./print/file-type')
+const Base64 = require('js-base64').Base64
 
 // 在子进程中捕获异常并输出错误信息到控制台
 process.on('uncaughtException', (err) => {
@@ -133,7 +134,7 @@ app.post('/multiple-print', (req, res) => {
  * 事例: localhost:45656/print?fileUrl=http://xxxx
  */
 app.post('/print', (req, res, next) => {
-  console.log('-------------------------------------------')
+  console.log('-------------------------------------------print')
   /**
    * NOTE:
    * 实现步骤:
@@ -147,15 +148,17 @@ app.post('/print', (req, res, next) => {
   // WARM: 当前版本设计, fileUrl 先不从 url 中移到 body(保留在 url 中) , 因为这个调用属于破坏性更新, 将影响之前版本的调阅方法
   // 目前才用合并处理, 如果 url 中存在 fileUrl 中的话, 就采用请求 url 中的 fileUrl (反之取 body 中的)
 
-  const { downloadOptions, fileUrl: fileUrlInBody } = req.body
+  const { fileUrl: fileUrlInBody } = req.body
 
   const fileUrl = fileUrlInUrl || fileUrlInBody
 
-  console.log('文件地址: ', fileUrl)
+  console.log('原始地址: ', fileUrl)
+
+  let downloadOptions = JSON.parse(Base64.decode(fileUrl))
 
   let respondData = {}
   if (fileUrl) {
-    const printInfo = createPrintInfo(fileUrl, true, downloadOptions)
+    const printInfo = createPrintInfo(downloadOptions.url, true, downloadOptions)
 
     const printCallback = (status = 1, e) => {
       // 成功
@@ -236,6 +239,10 @@ async function handlePrint ({ fileUrl, downloadOptions }) {
   try {
     randomCacheDir = wrapRandomFolder(cacheDir)
 
+    console.log('开始下载文件' + downloadOptions.url)
+
+    // 文件下载地址替换为json中的url
+    fileUrl = downloadOptions.url
     // 下载文件至本地的缓存文件夹
     const { filename, fileType } = await downloadFile(
       fileUrl,
@@ -253,7 +260,8 @@ async function handlePrint ({ fileUrl, downloadOptions }) {
       handleFileType(fileType),
       filename,
       randomCacheDir,
-      fileUrl
+      fileUrl,
+      downloadOptions
     )
     // NOTE: 正式打印 ========== ↑
 
@@ -284,8 +292,9 @@ async function handlePrint ({ fileUrl, downloadOptions }) {
  * @param {string} filename - 文件夹
  * @param {string} randomCacheDir - 通过随机生成的文件夹名字
  * @param {string} fileUrl - 资源地址
+ * @param {object} downloadOptions - 打印配置
  */
-function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl) {
+function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl, downloadOptions) {
   // 这一步, 使用 download 下载文件后, 需要看文件下载的内容是否支持打印
   // NOTE: 目的: 为了对不同的文件类型使用不同的打印方式进行分发处理
 
@@ -298,7 +307,7 @@ function dispatchByFileType (fileDetail, filename, randomCacheDir, fileUrl) {
     case 'pdf':
       // 打印 pdf
 
-      return printPdf(randomCacheDir, filename, deviceName)
+      return printPdf(randomCacheDir, filename, deviceName, downloadOptions)
 
     default :
       // 未匹配

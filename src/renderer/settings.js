@@ -5,6 +5,7 @@
  */
 
 module.exports = {
+  defaultOrientation: 'landscape', // 票据打印方向
   defaultPrinter: '', // 默认打印机名称
   socketPort: 30981, // socket 默认端口
   httpPort: 45656, // express 打印服务默认端口

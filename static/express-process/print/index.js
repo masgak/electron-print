@@ -8,7 +8,7 @@ const download = require('download')
 const fse = require('fs-extra')
 const fs = require('fs')
 const dayjs = require('dayjs')
-const { print } = require('pdf-to-printer')
+const {print} = require('pdf-to-printer')
 
 let uid = 0 // 标识 id
 
@@ -37,17 +37,17 @@ async function downloadFile (url, cacheDir, options) {
   // }
 
   try {
-    const mergeOptions = Object.assign({ }, defaultDownloadOptions, options)
+    const mergeOptions = Object.assign({}, defaultDownloadOptions, options)
 
     // 增加资源获取失败提示
     const response = await download(url, cacheDir, mergeOptions)
 
-    const { filename, fileType } = getFilename(cacheDir)
+    const {filename, fileType} = getFilename(cacheDir)
 
     // WARM: 如果没有文件后缀, 则这里断定为非正常的资源链接, 会读取 buffer 信息返回
-    if (fileType === '') throw Error(`通过url获取资源失败,该资源响应结果: ${response.toString()}`)
+    if (fileType === '') throw Error(`${response.toString()}`)
 
-    return { filename, fileType }
+    return {filename, fileType}
   } catch (err) {
     console.log(err)
 
@@ -74,20 +74,30 @@ async function deleteCache (cacheDir, filename) {
  * @param {String} cacheDir - 缓存目录路径
  * @param {String} filename - 文件名
  * @param {String} deviceName - 打印机名称
+ * @param {object} downloadOptions - 打印配置
  * @returns {Promise}
  */
-async function printPdf (cacheDir, filename, deviceName) {
+async function printPdf (cacheDir, filename, deviceName, downloadOptions) {
+  console.log('-----打印文件名称------' + filename)
+  // 根据打印文件名设置票据与清单的横纵向
+  console.log('横纵向(portrait 纵向 landscape 横向):' + downloadOptions.orientation + ' 打印机型号:' + downloadOptions.printer +
+    ' 页码:' + downloadOptions.pages + ' 纸张类型:' + downloadOptions.paperSize)
   // 打印配置项
   const options = {
-    printer: deviceName,
-    paperSize: 'A4',
+    // portrait 纵向 landscape 横向
+    orientation: downloadOptions.orientation,
+    // 打印机型号
+    printer: downloadOptions.printer,
+    // 页码
+    pages: downloadOptions.pages,
+    // 纸张类型
+    paperSize: downloadOptions.paperSize,
     scale: 'fit', //  Supported names noscale, shrink and fit.
-    monochrome: true, // 默认打印黑白
+    monochrome: false, // 默认打印黑白,黑白打印 true、false
     silent: false // 屏蔽打印错误的信息
   }
   const pdfPath = `${cacheDir}\\${filename}`
   return print(pdfPath, options).then(() => {
-    // console.log('打印成功')
     return Promise.resolve(true)
   })
 }
@@ -107,7 +117,7 @@ function queryFileType (fullFilename) {
 function getFilename (cacheDir) {
   const filenames = fs.readdirSync(cacheDir)
   if (filenames.length === 1) {
-    return { filename: filenames[0], fileType: queryFileType(filenames[0]) }
+    return {filename: filenames[0], fileType: queryFileType(filenames[0])}
   } else {
     throw new Error('文件不存在或文件夹内容异常')
   }
@@ -138,7 +148,7 @@ function printImage (cacheDir, filename, deviceName, fileUrl) {
   const filePath = `${cacheDir}\\${filename}`
   return new Promise((resolve, reject) => {
     process.once('message', (res) => {
-      const { type, err } = res
+      const {type, err} = res
 
       switch (type) {
         case 'print-image-success':
@@ -154,7 +164,7 @@ function printImage (cacheDir, filename, deviceName, fileUrl) {
           break
       }
     })
-    process.send({ type: 'print-image', result: {deviceName, filePath} })
+    process.send({type: 'print-image', result: {deviceName, filePath}})
   })
 }
 

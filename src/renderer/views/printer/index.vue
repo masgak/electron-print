@@ -1,19 +1,19 @@
 <!--
- * @Description: 
+ * @Description:
  * @Date: 2022-01-10 15:51:01
  * @LastEditTime: 2022-01-18 21:14:20
 -->
 <template>
   <div id="printer-main">
-    <div class="menu-item"
-         @click="launchPrintServer">
-      <img class="menu-icon"
-           :src="serverIcon"
-           alt="">
-      <em class="menu-name">
-        {{ !isOpenServer ? '开启' : '关闭' }}打印服务
-      </em>
-    </div>
+<!--    <div class="menu-item"-->
+<!--         @click="launchPrintServer">-->
+<!--      <img class="menu-icon"-->
+<!--           :src="serverIcon"-->
+<!--           alt="">-->
+<!--      <em class="menu-name">-->
+<!--        {{ !isOpenServer ? '开启' : '关闭' }}打印服务-->
+<!--      </em>-->
+<!--    </div>-->
     <div class="menu-item"
          @click="loadSettings">
       <img class="menu-icon"
@@ -59,9 +59,7 @@ export default {
 
   mounted () {
     // this.getPrinterList()
-
     // this.getGlobalServerParam()
-
   },
 
   methods: {

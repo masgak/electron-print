@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'development') {
 let mainWindow
 let willQuitApp = false
 
-app.setName('我的应用')
+app.setName('打印助手')
 
 // app.allowRendererProcessReuse = true
 
@@ -75,11 +75,14 @@ function createWindow () {
     // windows 下如果有设置开机自启, 则开机自启打开时默认隐藏窗口, BrowserWindow 默认 show 为 false
     const hideWin = process.argv.includes(OPEN_AS_HIDDEN_WIN_TARGET)
 
+    log.info('启动界面')
     if (hideWin) hideMainWin()
-    else {
-      // 如果没有设置 开机自启, 则需要显示窗口
-      mainWindow.show()
-    }
+    // else {
+    //   log.info('隐藏界面')
+    //   // 如果没有设置 开机自启, 则需要显示窗口
+    //   mainWindow.hide()
+    // }
+    mainWindow.hide()
 
     if (process.env.NODE_ENV === 'development') {
       // 打开调试工具

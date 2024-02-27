@@ -11,25 +11,20 @@
                   v-bind="layout"
                   style=" padding-bottom:20px">
       <!-- 打印机设置 start -->
-      <a-form-model-item label="默认打印机 : "
-                         prop="defaultPrinter">
-        <!-- <a-checkbox v-model="ruleForm.defaultPrinter.value"
-                    :size="widgetSize">
-          开机自启
-        </a-checkbox> -->
+<!--      <a-form-model-item label="默认打印机 : "-->
+<!--                         prop="defaultPrinter">-->
 
-        <a-select style="width: 240px"
-                  :size="widgetSize"
-                  v-model="ruleForm.defaultPrinter.value">
-          <a-select-option :value="printer.name"
-                           v-for="(printer, index) in printers"
-                           :key="index">
-            {{ printer.isDefault ? `${printer.displayName} (默认)` : printer.displayName }}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
+<!--        <a-select style="width: 240px"-->
+<!--                  :size="widgetSize"-->
+<!--                  v-model="ruleForm.defaultPrinter.value">-->
+<!--          <a-select-option :value="printer.name"-->
+<!--                           v-for="(printer, index) in printers"-->
+<!--                           :key="index">-->
+<!--            {{ printer.isDefault ? `${printer.displayName} (默认)` : printer.displayName }}-->
+<!--          </a-select-option>-->
+<!--        </a-select>-->
+<!--      </a-form-model-item>-->
       <!-- 打印机设置  end -->
-
       <!-- express 打印服务端口 start -->
       <a-form-model-item has-feedback
                          label="http端口 :"
@@ -119,6 +114,7 @@ import { isEmpty, isPlainObject } from 'lodash'
 import { socketPort, httpPort, openAtLogin, displayQueuePanel } from '@/settings'
 
 const configuration = {
+  defaultOrientation: 'configuration-defaultOrientation', // 纸张横纵向
   defaultPrinter: 'configuration-defaultPrinter', // 默认打印机 key
   cacheDir: 'configuration-cacheDir', // 缓存文件夹设置路径 key
   httpPort: 'configuration-port-http', // http 端口 key
@@ -141,6 +137,11 @@ export default {
           default: '',
           value: '',
           key: configuration.defaultPrinter
+        },
+        defaultOrientation: { // 票据打印方向
+          default: '',
+          value: '',
+          key: configuration.defaultOrientation
         },
         printerExpressPort: { // express 打印服务的端口
           default: httpPort, // 默认配置
