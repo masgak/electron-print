@@ -1,7 +1,7 @@
 {
   "name": "silent-print",
-  "version": "1.0.3",
-  "author": "YuHua",
+  "version": "1.0.4",
+  "author": "Bosssoft",
   "description": "this is description",
   "license": "MIT",
   "main": "./dist/electron/main.js",

@@ -3,22 +3,19 @@
  * @Date: 2022-01-14 14:07:18
  * @LastEditTime: 2022-01-17 16:48:29
  */
-const path = require('path')
 const storage = require('electron-json-storage')
 
 const { isEmptyObject } = require('../common/tools')
-const { BrowserWindow, ipcMain, screen } = require('electron')
-
-const html = path.join(__static, 'queue-panel/index.html')
+const { ipcMain } = require('electron')
 
 let win = null
 // let isClosed = false
 
 // 打印队列进度条窗口大小
-const windowSize = {
-  width: 270,
-  height: 15
-}
+// const windowSize = {
+//   width: 270,
+//   height: 15
+// }
 
 shouldBeCreate()
 
@@ -26,28 +23,28 @@ shouldBeCreate()
  * 创建打印加载队列的动画提示面板
  */
 function createQueuePanelWin () {
-  const { x, y } = getShowPosition()
-
-  win = new BrowserWindow({
-    width: windowSize.width,
-    height: windowSize.height,
-    x,
-    y,
-    alwaysOnTop: true,
-    frame: false, // 取消window自带的关闭最小化等
-    resizable: false, // 禁止改变主窗口尺寸
-    transparent: true, // 透明窗口
-    backgroundColor: '#00000000',
-    webPreferences: { // 修复 index.html require失败  的问题的配置
-      nodeIntegration: true, // 开启node环境
-      // 官网似乎说是默认false，但是这里必须设置  contextIsolation
-      contextIsolation: false
-    }
-  })
-  win.loadFile(html)
-  // isClosed = false
-
-  win.hide() // 默认隐藏
+  // const { x, y } = getShowPosition()
+  //
+  // win = new BrowserWindow({
+  //   width: windowSize.width,
+  //   height: windowSize.height,
+  //   x,
+  //   y,
+  //   alwaysOnTop: true,
+  //   frame: false, // 取消window自带的关闭最小化等
+  //   resizable: false, // 禁止改变主窗口尺寸
+  //   transparent: true, // 透明窗口
+  //   backgroundColor: '#00000000',
+  //   webPreferences: { // 修复 index.html require失败  的问题的配置
+  //     nodeIntegration: true, // 开启node环境
+  //     // 官网似乎说是默认false，但是这里必须设置  contextIsolation
+  //     contextIsolation: false
+  //   }
+  // })
+  // win.loadFile(html)
+  // // isClosed = false
+  //
+  // win.hide() // 默认隐藏
 }
 
 /**
@@ -99,19 +96,19 @@ ipcMain.on('display-queue-panel', (e, needDisplay = false) => {
  * @description: 获取显示位置(一般在右下角)
  * @return {*}
  */
-function getShowPosition () {
-  const currentScreen = screen.getPrimaryDisplay()
-  const { width, height } = currentScreen.workArea
-  // console.log(currentScreen)
-  // 设窗口大小为 270 * 120
-  //   const [x, y] = [width - windowSize.width, height - windowSize.height];
-
-  // console.log(width)
-  // 出现在左下角
-  const [x, y] = [width - windowSize.width, height - windowSize.height]
-
-  return { x, y }
-}
+// function getShowPosition () {
+//   const currentScreen = screen.getPrimaryDisplay()
+//   const { width, height } = currentScreen.workArea
+//   // console.log(currentScreen)
+//   // 设窗口大小为 270 * 120
+//   //   const [x, y] = [width - windowSize.width, height - windowSize.height];
+//
+//   // console.log(width)
+//   // 出现在左下角
+//   const [x, y] = [width - windowSize.width, height - windowSize.height]
+//
+//   return { x, y }
+// }
 
 /**
  * 显示打印面板

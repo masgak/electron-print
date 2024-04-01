@@ -68,13 +68,13 @@
       <!-- 开机自启  end -->
 
       <!-- 打印队列动画 start -->
-      <a-form-model-item label="提示 : "
-                         prop="displayQueuePanel">
-        <a-checkbox v-model="ruleForm.displayQueuePanel.value"
-                    :size="widgetSize">
-          打印进度提示 <em>(打印时, 屏幕右下角显示打印队列进度条)</em>
-        </a-checkbox>
-      </a-form-model-item>
+<!--      <a-form-model-item label="提示 : "-->
+<!--                         prop="displayQueuePanel">-->
+<!--        <a-checkbox v-model="ruleForm.displayQueuePanel.value"-->
+<!--                    :size="widgetSize">-->
+<!--          打印进度提示 <em>(打印时, 屏幕右下角显示打印队列进度条)</em>-->
+<!--        </a-checkbox>-->
+<!--      </a-form-model-item>-->
       <!-- 打印队列动画  end -->
 
       <!-- 缓存目录 start -->
@@ -228,6 +228,7 @@ export default {
      * 设置开机自启动
      */
     setOpenAtLogin () {
+      console.log('开机自启动:' + this.ruleForm.openAtLogin.value)
       const data = { openAtLogin: this.ruleForm.openAtLogin.value }
       ipcRenderer.send('register-setLoginItemSettings', data)
     },

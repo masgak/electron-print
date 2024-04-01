@@ -29,8 +29,8 @@ async function getFilePath () {
     console.log(e)
     result = false
   }
-  // console.log('是否取消选择:', result.canceled)
-  // console.log('文件路径:', result.filePaths)
+  console.log('是否取消选择:', result.canceled)
+  console.log('文件路径:', result.filePaths)
   return result
 }
 

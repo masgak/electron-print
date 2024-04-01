@@ -63,19 +63,19 @@ function createWindow () {
   })
 
   mainWindow.on('ready-to-show', () => {
-    const { loginSettingsArgs, OPEN_AS_HIDDEN_WIN_TARGET } = require('../main/events/register-openAtLogin')
-
-    // TODO: 这里可能涉及到 MAC OS 的启动判断, openAtLogin, 缺少样本, 先不写了
-    app.getLoginItemSettings({
-      args: loginSettingsArgs
-    })
+    const { OPEN_AS_HIDDEN_WIN_TARGET } = require('../main/events/register-openAtLogin')
+    //
+    // // TODO: 这里可能涉及到 MAC OS 的启动判断, openAtLogin, 缺少样本, 先不写了
+    // app.getLoginItemSettings({
+    //   args: loginSettingsArgs
+    // })
 
     log.info('process.argv: ', process.argv)
 
     // windows 下如果有设置开机自启, 则开机自启打开时默认隐藏窗口, BrowserWindow 默认 show 为 false
     const hideWin = process.argv.includes(OPEN_AS_HIDDEN_WIN_TARGET)
 
-    log.info('启动界面')
+    log.info('启动界面2')
     if (hideWin) hideMainWin()
     // else {
     //   log.info('隐藏界面')
@@ -93,6 +93,12 @@ function createWindow () {
   require('./printer') // 打印监听
   require('./events') // 服务事件加载
   require('./common') // 通用事件
+  console.log('写注册表')
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    // 如果应用以管理员身份运行，设置此选项为true可避免UAC（用户账户控制）对话框在Windows上弹出。
+    openAsHidden: true
+  })
 }
 
 // 限制只能开启一个应用(4.0以上版本)
